@@ -37,7 +37,7 @@ export async function loadJsonFile(filename: string): Promise<any> {
 
 async function ensureDir(dir: string): Promise<void> {
     try {
-        await mkdir(dir, { recursive: true });
+        await mkdir(dir, { mode: 0o700, recursive: true });
     } catch (err) {
         if (err.code !== 'EEXIST') { throw err; }
     }
@@ -70,7 +70,7 @@ export class UnencryptedFileSystemKeyStore extends KeyStore {
     async setKey(networkId: string, accountId: string, keyPair: KeyPair): Promise<void> {
         await ensureDir(`${this.keyDir}/${networkId}`);
         const content: AccountInfo = { account_id: accountId, public_key: keyPair.getPublicKey().toString(), private_key: keyPair.toString() };
-        await writeFile(this.getKeyFilePath(networkId, accountId), JSON.stringify(content));
+        await writeFile(this.getKeyFilePath(networkId, accountId), JSON.stringify(content), { mode: 0o600 });
     }
 
     /**
